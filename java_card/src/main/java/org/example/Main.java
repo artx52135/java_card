@@ -141,8 +141,16 @@ class BankDatabase{
             bankCards.remove(cardNumber);
         }
     }
-
-
+    public void checkAndSendNotifications() {
+        Date currentDate = new Date();
+        for (BankCard card : bankCards.values()) {
+            if (currentDate.after(card.getExpiryDate()) && card.getIsSentNote() == false) {
+                Client client = card.getClient();
+                NotificationService.sendNotification(client, "Срок действий вашей карты под номером: " + card.getCardNumber() + " истёк!");
+                card.setIsSentNote(true);
+            }
+        }
+    }
     public void getInfo() {
         System.out.println("Информация о клиентах и их картах:");
         for (Client client : clients.values()) {
