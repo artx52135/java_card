@@ -1,21 +1,30 @@
 package org.example;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+// Класс клиента
 class Client {
     private String id;
     private String fullName;
     private Date dateOfBirth;
-
+    private BufferedWriter writer;
 
 
     public Client(String fullName, Date dateOfBirth) {
         this.id = UUID.randomUUID().toString();
         this.fullName = fullName;
         this.dateOfBirth = dateOfBirth;
+        try {
+            this.writer = new BufferedWriter(new FileWriter(fullName + ".txt", true)); // Создание файла для уведомлений
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     public void getInfo(){
         System.out.println("Имя клиента:" + fullName);
@@ -29,8 +38,12 @@ class Client {
     public String getFullName() {
         return fullName;
     }
-
+    public BufferedWriter getWriter() {
+        return writer;
+    }
 }
+
+// Класс банковской карты
 class BankCard{
     private String cardNumber;
     private Client client;
@@ -44,6 +57,7 @@ class BankCard{
         this.cardNumber = cardNumber;
         this.issueDate = issueDate;
         this.expiryDate = expiryDate;
+        this.isSentNote = false;
     }
     public void getInfo(){
         System.out.println("Номер карты:" + cardNumber);
@@ -64,6 +78,9 @@ class BankCard{
     }
     public boolean getIsSentNote(){
         return isSentNote;
+    }
+    public void setIsSentNote(boolean flag){
+        isSentNote = flag;
     }
 }
 
