@@ -83,6 +83,19 @@ class BankCard{
         isSentNote = flag;
     }
 }
+// Класс для уведомлений
+class NotificationService {
+    public static void sendNotification(Client client, String message) {
+        try {
+            BufferedWriter writer = client.getWriter();
+            writer.write("Sending notification: " + message + "\n");
+            writer.flush();
+            System.out.println("Отправка уведомления " + client.getFullName() + ": " + message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
 
 // Класс для хранения данных клиентов и их карт
 class BankDatabase{
