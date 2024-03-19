@@ -1,12 +1,12 @@
 package org.example;
 
+import com.sun.security.jgss.GSSUtil;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.*;
 
 // Класс клиента
 class Client {
@@ -83,6 +83,8 @@ class BankCard{
         isSentNote = flag;
     }
 }
+
+
 // Класс для уведомлений
 class NotificationService {
     public static void sendNotification(Client client, String message) {
@@ -141,6 +143,9 @@ class BankDatabase{
             bankCards.remove(cardNumber);
         }
     }
+
+
+    // Проверка и отправка уведомлений о завершении срока действия карты
     public void checkAndSendNotifications() {
         Date currentDate = new Date();
         for (BankCard card : bankCards.values()) {
@@ -167,8 +172,47 @@ class BankDatabase{
     }
 }
 
+// Класс для потока рассылки уведомлений
+class NotificationThread extends Thread {
+    private BankDatabase bankDatabase;
+    private long interval; // Интервал между проверками в миллисекундах
+
+    public NotificationThread(BankDatabase bankDatabase, long interval) {
+        this.bankDatabase = bankDatabase;
+        this.interval = interval;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            bankDatabase.checkAndSendNotifications();
+            try {
+                Thread.sleep(interval); // Пауза между проверками
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
 public class Main {
     public static void main(String[] args) {
+        BankDatabase bankDatabase = new BankDatabase();
+        Client cl1 = new Client("Tom Smith", new Date());
+        BankCard bc1 = new BankCard(cl1,"123", new Date(), new Date(System.currentTimeMillis() + 10000));
+        bankDatabase.createClient(cl1);
+        bankDatabase.createCard(bc1);
+        //bc1.getInfo();
 
+
+
+        String clientId = bankDatabase.createClient("Иван Иванович Иванов", new Date());
+        bankDatabase.createCard(clientId, "1234567890123456", new Date(), new Date(System.currentTimeMillis() + 10000));
+        bankDatabase.createCard(clientId, "9999999999999999", new Date(), new Date(System.currentTimeMillis() + 20000));
+        bankDatabase.createCard(clientId, "7777777777777777", new Date(), new Date(System.currentTimeMillis() + 50000));
+
+        NotificationThread notificationThread = new NotificationThread(bankDatabase, 5000); // Проверяем каждую минуту
+        notificationThread.start();
+        bankDatabase.getInfo();
     }
 }
