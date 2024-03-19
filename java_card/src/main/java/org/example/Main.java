@@ -1,6 +1,8 @@
 package org.example;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 class Client {
@@ -62,6 +64,68 @@ class BankCard{
     }
     public boolean getIsSentNote(){
         return isSentNote;
+    }
+}
+
+// Класс для хранения данных клиентов и их карт
+class BankDatabase{
+    private Map<String, Client> clients;
+    private Map<String, BankCard> bankCards;
+
+
+    public BankDatabase() {
+        clients = new HashMap<>();
+        bankCards = new HashMap<>();
+    }
+    public Map<String, Client> getClients(){
+        return clients;
+    }
+
+    public String createClient(Client client) {
+        clients.put(client.getId(), client);
+        return client.getId();
+    }
+
+    public void createCard(BankCard card) {
+        bankCards.put(card.getCardNumber(), card);
+    }
+
+
+    public String createClient(String fullName, Date dateOfBirth) {
+        Client client = new Client(fullName, dateOfBirth);
+        clients.put(client.getId(), client);
+        return client.getId();
+    }
+
+    public void createCard(String clientId, String cardNumber, Date issueDate, Date expiryDate) {
+        Client client = clients.get(clientId);
+        if (client != null) {
+            BankCard card = new BankCard(client, cardNumber, issueDate, expiryDate);
+            bankCards.put(cardNumber, card);
+        }
+    }
+
+    public void cancelCard(String cardNumber) {
+        BankCard card = bankCards.get(cardNumber);
+        if (card != null) {
+            bankCards.remove(cardNumber);
+        }
+    }
+
+
+    public void getInfo() {
+        System.out.println("Информация о клиентах и их картах:");
+        for (Client client : clients.values()) {
+            System.out.println("Клиент:");
+            client.getInfo();
+            System.out.println("Карты:");
+            for (BankCard card : bankCards.values()) {
+                if (card.getClient().getId().equals(client.getId())) {
+                    card.getInfo();
+                }
+            }
+            System.out.println();
+        }
     }
 }
 
