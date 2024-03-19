@@ -112,6 +112,9 @@ class BankDatabase{
     public Map<String, Client> getClients(){
         return clients;
     }
+    public Map<String, BankCard> getBankCards() {
+        return bankCards;
+    }
 
     public String createClient(Client client) {
         clients.put(client.getId(), client);
