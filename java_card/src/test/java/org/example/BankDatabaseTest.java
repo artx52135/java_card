@@ -1,6 +1,6 @@
 package org.example;
 
-import static junit.framework.TestCase.assertTrue;
+
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
